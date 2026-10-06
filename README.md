@@ -1,0 +1,2 @@
+# OpenSpecTest
+オープンスペックテスト
