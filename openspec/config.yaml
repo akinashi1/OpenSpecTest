@@ -5,24 +5,47 @@ context: |
   All artifacts must be written in ja.
   Keep OpenSpec structural headings and SHALL/MUST keywords in English.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  ## 目的
+  OpenSpec の動作確認用の小さなメモ帳アプリ（CRUD・ログイン・ユーザーごとの権限）。
+  学習・検証用なので、最小限の実装にとどめる。凝った設計や将来への備えはしない。
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+  ## 構成
+  - `backend/`: Laravel 12（PHP 8.3）の API。認証は Sanctum（SPA 認証）、権限は Policy
+  - `frontend/`: Next.js（App Router）+ TypeScript の画面。見た目は最小限（装飾なし）
+  - DB: MySQL 8.4。phpMyAdmin（http://localhost:8080）で中身を確認する
+  - `compose.yaml`: mysql / phpmyadmin / backend / frontend の4コンテナ
+
+  ## 開発環境
+  - Windows・macOS のどちらでも、同じ手順で開発できるようにする
+  - 手元に入れるのは Docker Desktop のみ。PHP・Composer・Node はコンテナ内で動かす
+  - 操作は `docker compose ...` に統一する。OS 固有のスクリプト（.bat / .sh）は作らない
+  - イメージは amd64 / arm64 の両対応のもの（Apple Silicon で動くもの）を使う
+  - `vendor` と `node_modules` は名前付きボリュームにする（遅くなるため）
+  - Next.js はファイル変更の検知に WATCHPACK_POLLING=true を使う
+  - 改行コードは LF に固定する（`.gitattributes` に `* text=auto eol=lf`）
+  - 接続情報などは `.env` に置き、コミットしない。`.env.example` のみ管理する
+
+  ## テストと TDD
+  - API: Pest。テスト用 DB（`memo_test`）を使い、`RefreshDatabase` でテストごとに初期化する
+  - 画面: Vitest + React Testing Library。API はモックする
+  - 実装の前に、失敗するテストを先に書く（Red → Green）
+  - spec の各 Scenario に対応するテストを1つ以上書き、テスト名に Scenario 名を入れる
+  - コマンド:
+    - `docker compose exec backend php artisan test`
+    - `docker compose exec frontend npm test`
+
+  ## 変更の進め方（この順に1つずつ提案・実装・アーカイブする）
+  0. setup-environment: 4コンテナの環境と雛形。両方のテストが1本ずつ通るところまで（機能は作らない）
+  1. add-memo-crud: メモの作成・一覧・取得・更新・削除（認証なし）
+  2. add-auth: 登録・ログイン・ログアウト。メモの操作にはログインを必須にする
+  3. add-permissions: ロール（user / admin）。user は自分のメモのみ、admin は全員分を閲覧・削除できる
+
+rules:
+  proposal:
+    - 対象外（Out of scope）を必ず明記する
+  specs:
+    - 各 Requirement に、正常系と異常系の Scenario を1つ以上書く
+    - API の Scenario には HTTP メソッド・パス・ステータスコードを書く
+  tasks:
+    - 「テストを書く」→「実装する」の順にタスクを分ける
+    - 最後のタスクは「API と画面のテストが通ることを確認する」にする
