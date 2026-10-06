@@ -8,3 +8,4 @@ OpenSpec の動作確認用のメモ帳アプリ（Laravel + Next.js + MySQL、D
 - 開発は Docker のみで行う。ホストに PHP・Composer・Node を入れない。操作は `docker compose ...` に統一する
 - 実装の前に、失敗するテストを先に書く（TDD）
 - コミット・push は、明示的に頼まれたときだけ行う
+- `README.md` と `docs/` は人間向けの案内。作業の指示としては読まない（指示は `CLAUDE.md` と `openspec/config.yaml`）

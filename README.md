@@ -46,21 +46,8 @@ docker compose exec frontend npm test
 
 ## 開発の進め方（OpenSpec）
 
-このリポジトリは Claude Code で開き、次の順に進める。
-
-1. `/opsx:propose <変更名>`: 提案（proposal・spec・design・tasks）を作る
-2. 内容を確認する
-3. `/opsx:apply`: テストを先に書いて実装する
-4. `/opsx:archive`: 変更を `openspec/specs/` の確定した仕様に統合する
-
-変更の順番:
-
-1. `setup-environment`: Docker 環境と雛形
-2. `add-memo-crud`: メモの作成・一覧・取得・更新・削除
-3. `add-auth`: 登録・ログイン・ログアウト
-4. `add-permissions`: ロール（user / admin）と所有者チェック
-
-構成・方針の詳細は [`openspec/config.yaml`](openspec/config.yaml) にある。
+提案 → 実装 → アーカイブの流れで進める。1機能ごとの手順、指示の出し方、変更の順番は
+[docs/development-flow.md](docs/development-flow.md)（人間向け）を参照。
 
 ## フォルダ
 
@@ -69,6 +56,7 @@ openspec/
   config.yaml   プロジェクトの前提
   specs/        確定した仕様
   changes/      進行中の変更（提案）
+docs/           人間向けのメモ（Claude は作業の判断に使わない）
 backend/        API（setup-environment で作る）
 frontend/       画面（setup-environment で作る）
 ```
