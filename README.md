@@ -5,7 +5,7 @@
 
 | 役割 | 技術 |
 |---|---|
-| API（`backend/`） | Laravel 12 / PHP 8.3 |
+| API（`backend/`） | Laravel 13 / PHP 8.4 |
 | 画面（`frontend/`） | Next.js（App Router）/ TypeScript |
 | DB | MySQL 8.4（phpMyAdmin 付き） |
 

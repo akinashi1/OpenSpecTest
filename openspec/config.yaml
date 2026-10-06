@@ -10,7 +10,7 @@ context: |
   学習・検証用なので、最小限の実装にとどめる。凝った設計や将来への備えはしない。
 
   ## 構成
-  - `backend/`: Laravel 12（PHP 8.3）の API。認証は Sanctum（SPA 認証）、権限は Policy
+  - `backend/`: Laravel 13（PHP 8.4）の API。認証は Sanctum（SPA 認証）、権限は Policy
   - `frontend/`: Next.js（App Router）+ TypeScript の画面。見た目は最小限（装飾なし）
   - DB: MySQL 8.4。phpMyAdmin（http://localhost:8080）で中身を確認する
   - `compose.yaml`: mysql / phpmyadmin / backend / frontend の4コンテナ

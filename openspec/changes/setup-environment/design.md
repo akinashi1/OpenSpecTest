@@ -26,7 +26,7 @@ PHP・Composer・Node は入っていない前提。方針の詳細は `openspec
 - **コンテナ**:
   - mysql: 公式 `mysql:8.4`（arm64 対応）。ホストにはポートを公開しない（phpMyAdmin とは内部ネットワークで接続）
   - phpmyadmin: 公式 `phpmyadmin`、ホスト 8080
-  - backend: `php:8.3-cli` ベースに必要な拡張（pdo_mysql）と Composer を入れた小さな Dockerfile。
+  - backend: `php:8.4-cli` ベースに必要な拡張（pdo_mysql）と Composer を入れた小さな Dockerfile。
     `php artisan serve --host=0.0.0.0 --port=8000`、ホスト 8000
   - frontend: `node:22-alpine`、`npm run dev`、ホスト 3000
 - **ボリューム**: `backend/vendor` と `frontend/node_modules`（と `.next`）は名前付きボリューム。
@@ -37,7 +37,7 @@ PHP・Composer・Node は入っていない前提。方針の詳細は `openspec
   開発用 DB はテストから触れない。
 - **テストツール**: API は Pest（Laravel プラグイン）、画面は Vitest + React Testing Library（jsdom）。
 - **ヘルスチェック**: `GET /api/health` で DB に `SELECT 1` を実行し、成功時に `{"status":"ok"}` を返す。
-  `routes/api.php` は Laravel 12 では標準で無いので、`install:api` で有効にする。
+  `routes/api.php` は標準で登録されていないので、`bootstrap/app.php` の `withRouting` に `api:` を足して有効にする（`install:api` は Sanctum まで入れてしまうため、認証の変更まで使わない）。
 - **画面と API のつなぎ**: 今回は疎通できる状態（API の URL を環境変数で持つ）までで、画面から API を呼ぶ処理は作らない。
 
 ## Risks / Trade-offs
@@ -47,3 +47,14 @@ PHP・Composer・Node は入っていない前提。方針の詳細は `openspec
 - [`mysql` の初回起動前にバックエンドが DB に繋ごうとして失敗する] → mysql に healthcheck を付け、
   backend は `depends_on: condition: service_healthy` で待つ
 - [ポート 3000 / 8000 / 8080 が他のアプリと衝突する] → ホスト側のポートは `.env` で変更できるようにする
+
+## 実装中に分かったこと
+
+- **PHP は 8.4**: `composer:2` イメージ（PHP 8.4）で生成したロックファイルが PHP 8.4 以上の依存を含むため、backend も `php:8.4-cli` に揃えた。
+- **テスト用 DB の指定は `<env>` だけでは足りない**: コンテナの環境変数 `DB_DATABASE=memo` が `$_SERVER` に入っていて、Laravel はそちらを先に読むため、
+  `phpunit.xml` の `<env>` を上書きできず、テストが開発用 `memo` に当たった。`<server name="DB_DATABASE" value="memo_test" force="true"/>` を併用して解決し、
+  接続先を確かめるテスト（`TestDatabaseTest`）で再発を防ぐ。
+- **404 の JSON は Laravel 13 の標準設定で返る**: `api/*` は標準で JSON のエラーになるため、この Scenario のテストは Red にならず最初から通る。
+- **Vitest は `@types/node` を 22 以上に揃える必要があった**（Next.js の雛形は `^20`）。
+- **雛形が生成する `CLAUDE.md` / `AGENTS.md`**: Laravel（Boost）のものは PHP をホストへインストールさせる内容で「Docker のみ」の方針と衝突するため削除した。
+  Next.js のものは `next dev` が再生成するため残している。

@@ -9,7 +9,7 @@ Windows / macOS のどちらでも `docker compose` だけで動く土台と、T
 ## What Changes
 
 - `compose.yaml` を追加し、mysql / phpmyadmin / backend / frontend の4コンテナを `docker compose up -d` で起動できるようにする
-- `backend/` に Laravel 12 の雛形を作り、動作確認用のヘルスチェック API（`GET /api/health`）を1つだけ追加する
+- `backend/` に Laravel 13 の雛形を作り、動作確認用のヘルスチェック API（`GET /api/health`）を1つだけ追加する
 - `frontend/` に Next.js（App Router + TypeScript）の雛形を作り、デフォルト画面が表示される状態にする
 - API のテスト（Pest）と画面のテスト（Vitest + React Testing Library）を、それぞれ1本ずつ通す
 - MySQL に開発用 `memo` とテスト用 `memo_test` を作る
